@@ -1,0 +1,22 @@
+@import "tailwindcss";
+
+@theme {
+  --color-cream-50: #fdf7f0;
+  --color-cream-100: #f7ead9;
+  --color-cream-200: #efdcc4;
+  --color-ink: #2a2420;
+  --color-ink-light: #93897c;
+  --color-rose-50: #fdedf0;
+  --color-rose-100: #f9dbe1;
+  --color-rose-500: #e2748c;
+  --color-rose-600: #cf6079;
+}
+
+html, body, #root {
+  height: 100%;
+}
+
+body {
+  @apply bg-cream-50 text-ink antialiased;
+  -webkit-tap-highlight-color: transparent;
+}
