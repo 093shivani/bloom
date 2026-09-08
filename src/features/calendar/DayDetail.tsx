@@ -24,9 +24,9 @@ export function DayDetail({ date, onClose }: { date: string; onClose: () => void
   }
 
   return (
-    <div className="fixed inset-0 z-30 bg-black/40 flex items-end" onClick={onClose}>
+    <div className="fixed inset-0 z-30 bg-black/40 flex items-end justify-center" onClick={onClose}>
       <div
-        className="w-full max-h-[88vh] overflow-y-auto rounded-t-3xl bg-cream-50 p-4 pb-8"
+        className="w-full max-w-[480px] max-h-[88vh] overflow-y-auto rounded-t-3xl bg-cream-50 p-4 pb-8"
         onClick={(e) => e.stopPropagation()}
       >
         <div className="flex justify-between items-center mb-3">

@@ -18,7 +18,7 @@ function AppShell() {
 
   return (
     <>
-      <div className="min-h-screen">
+      <div className="min-h-screen max-w-[480px] mx-auto">
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/calendar" element={<Calendar />} />

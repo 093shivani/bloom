@@ -13,7 +13,7 @@ const tabs: { to: string; label: string; icon: LucideIcon }[] = [
 
 export function BottomNav() {
   return (
-    <nav className="fixed bottom-0 left-0 right-0 z-20 border-t border-cream-200 bg-white/95 backdrop-blur pb-[env(safe-area-inset-bottom)]">
+    <nav className="fixed bottom-0 left-0 right-0 z-20 mx-auto max-w-[480px] border-t border-cream-200 bg-white/95 backdrop-blur pb-[env(safe-area-inset-bottom)]">
       <ul className="flex justify-around">
         {tabs.map((tab) => (
           <li key={tab.to} className="flex-1">
