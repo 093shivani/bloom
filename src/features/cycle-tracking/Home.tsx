@@ -11,6 +11,7 @@ import { Card } from '../../components/Card'
 import { CycleRing } from '../../components/CycleRing'
 import { WeekStrip } from '../../components/WeekStrip'
 import { QuickFeelingCard } from '../symptoms/QuickFeelingCard'
+import { UpcomingSymptomsCard } from '../symptoms/UpcomingSymptomsCard'
 
 const today = () => format(new Date(), 'yyyy-MM-dd')
 
@@ -129,6 +130,10 @@ export function Home() {
         </div>
 
         <div className="mt-8">
+          <UpcomingSymptomsCard />
+        </div>
+
+        <div className="mt-4">
           {showFeelingCard && <QuickFeelingCard onDismiss={() => setShowFeelingCard(false)} />}
         </div>
       </div>

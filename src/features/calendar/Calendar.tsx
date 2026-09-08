@@ -103,7 +103,7 @@ export function Calendar() {
               const isOvulation = predictions?.ovulationDate === iso
 
               let bg = 'text-ink'
-              if (isPeriod) bg = 'bg-rose-500 text-white'
+              if (isPeriod) bg = 'bg-rose-700 text-white'
               else if (isPredictedPeriod) bg = 'bg-rose-50 text-rose-600 border border-dashed border-rose-100'
               else if (isOvulation) bg = 'bg-teal-600 text-white'
               else if (isFertile) bg = 'bg-teal-50 text-teal-700'
@@ -124,7 +124,7 @@ export function Calendar() {
         </Card>
 
         <div className="mt-5 flex flex-wrap gap-x-4 gap-y-2 text-xs text-ink-light">
-          <Legend swatch="bg-rose-500" label="Period" />
+          <Legend swatch="bg-rose-700" label="Period" />
           <Legend swatch="bg-rose-50 border border-dashed border-rose-100" label="Predicted period" />
           <Legend swatch="bg-teal-600" label="Ovulation" />
           <Legend swatch="bg-teal-50" label="Fertile window" />
