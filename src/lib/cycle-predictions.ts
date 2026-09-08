@@ -9,6 +9,14 @@ export interface CycleStats {
   cycleLengths: number[]
 }
 
+/**
+ * Below this many real data points, a computed average isn't trusted over
+ * the settings fallback — one same-day "End period" tap (easy to do by
+ * accident while exploring the app) would otherwise permanently skew
+ * predictions to a single day until enough later cycles dilute it back out.
+ */
+const MIN_SAMPLES_TO_TRUST_AVERAGE = 2
+
 /** Derives average cycle/period length from historical cycle start dates. */
 export function computeCycleStats(
   cycles: Cycle[],
@@ -27,13 +35,15 @@ export function computeCycleStats(
     .map((c) => differenceInCalendarDays(parseISO(c.endDate!), parseISO(c.startDate)) + 1)
     .filter((d) => d > 0 && d < 15)
 
-  const avgCycleLength = cycleLengths.length
-    ? Math.round(cycleLengths.reduce((a, b) => a + b, 0) / cycleLengths.length)
-    : fallback.avgCycleLength
+  const avgCycleLength =
+    cycleLengths.length >= MIN_SAMPLES_TO_TRUST_AVERAGE
+      ? Math.round(cycleLengths.reduce((a, b) => a + b, 0) / cycleLengths.length)
+      : fallback.avgCycleLength
 
-  const avgPeriodLength = periodLengths.length
-    ? Math.round(periodLengths.reduce((a, b) => a + b, 0) / periodLengths.length)
-    : fallback.avgPeriodLength
+  const avgPeriodLength =
+    periodLengths.length >= MIN_SAMPLES_TO_TRUST_AVERAGE
+      ? Math.round(periodLengths.reduce((a, b) => a + b, 0) / periodLengths.length)
+      : fallback.avgPeriodLength
 
   return { avgCycleLength, avgPeriodLength, cycleLengths }
 }
