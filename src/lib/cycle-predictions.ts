@@ -90,6 +90,29 @@ export function predictNextCycle(
   }
 }
 
+/**
+ * All dates that count as "period" for calendar/week-strip display: every day
+ * explicitly flow-tagged, plus the full span from each cycle's start to its
+ * end date — or, for a cycle still in progress (no end date yet), to
+ * start + avgPeriodLength - 1, so a period reads as its expected several-day
+ * block right away instead of just the single day it was logged on.
+ */
+export function getPeriodDates(cycles: Cycle[], avgPeriodLength: number): Set<string> {
+  const set = new Set<string>()
+  for (const cycle of cycles) {
+    Object.keys(cycle.flowIntensity).forEach((d) => set.add(d))
+
+    const start = parseISO(cycle.startDate)
+    const end = cycle.endDate ? parseISO(cycle.endDate) : addDays(start, Math.max(1, avgPeriodLength) - 1)
+    let cursor = start
+    while (cursor <= end) {
+      set.add(fmt(cursor))
+      cursor = addDays(cursor, 1)
+    }
+  }
+  return set
+}
+
 export function getCycleDayForDate(cycles: Cycle[], date: string): number | null {
   const sorted = [...cycles]
     .filter((c) => c.startDate <= date)

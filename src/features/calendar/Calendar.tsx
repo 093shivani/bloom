@@ -14,7 +14,7 @@ import {
 import { ChevronLeft, ChevronRight } from 'lucide-react'
 import { db } from '../../db/schema'
 import { getAllCycles } from '../../db/queries'
-import { predictNextCycle } from '../../lib/cycle-predictions'
+import { predictNextCycle, computeCycleStats, getPeriodDates } from '../../lib/cycle-predictions'
 import { Card, PageHeader } from '../../components/Card'
 import { DayDetail } from './DayDetail'
 
@@ -31,12 +31,10 @@ export function Calendar() {
   const predictions = useMemo(() => (settings ? predictNextCycle(cycles, settings) : null), [cycles, settings])
 
   const periodDates = useMemo(() => {
-    const set = new Set<string>()
-    for (const cycle of cycles) {
-      Object.keys(cycle.flowIntensity).forEach((d) => set.add(d))
-    }
-    return set
-  }, [cycles])
+    if (!settings) return new Set<string>()
+    const { avgPeriodLength } = computeCycleStats(cycles, settings)
+    return getPeriodDates(cycles, avgPeriodLength)
+  }, [cycles, settings])
 
   const predictedPeriodDates = useMemo(() => {
     const set = new Set<string>()

@@ -4,30 +4,32 @@ import { useNavigate, type NavigateFunction } from 'react-router-dom'
 import { format, parseISO, differenceInCalendarDays } from 'date-fns'
 import { Menu, CalendarDays, Droplet, Sparkle } from 'lucide-react'
 import { db } from '../../db/schema'
-import { getAllCycles, getActiveCycle, startPeriod, endPeriod, getActivePregnancy } from '../../db/queries'
-import { predictNextCycle } from '../../lib/cycle-predictions'
+import { getAllCycles, getActiveCycle, startPeriod, endPeriod, getActivePregnancy, updateSettings } from '../../db/queries'
+import { predictNextCycle, computeCycleStats, getPeriodDates } from '../../lib/cycle-predictions'
 import { getGestationalAge } from '../../lib/pregnancy'
 import { Card } from '../../components/Card'
 import { CycleRing } from '../../components/CycleRing'
 import { WeekStrip } from '../../components/WeekStrip'
 import { QuickFeelingCard } from '../symptoms/QuickFeelingCard'
 import { UpcomingSymptomsCard } from '../symptoms/UpcomingSymptomsCard'
+import { PeriodLengthDialog } from './PeriodLengthDialog'
 
 const today = () => format(new Date(), 'yyyy-MM-dd')
 
 export function Home() {
   const navigate = useNavigate()
   const [showFeelingCard, setShowFeelingCard] = useState(true)
+  const [showLengthDialog, setShowLengthDialog] = useState(false)
   const settings = useLiveQuery(() => db.settings.get('singleton'), [], undefined)
   const cycles = useLiveQuery(() => getAllCycles(), [], [])
   const activeCycle = useLiveQuery(() => getActiveCycle(), [cycles.length], null)
   const activePregnancy = useLiveQuery(() => getActivePregnancy(), [], null)
 
   const periodDates = useMemo(() => {
-    const set = new Set<string>()
-    for (const cycle of cycles) Object.keys(cycle.flowIntensity).forEach((d) => set.add(d))
-    return set
-  }, [cycles])
+    if (!settings) return new Set<string>()
+    const { avgPeriodLength } = computeCycleStats(cycles, settings)
+    return getPeriodDates(cycles, avgPeriodLength)
+  }, [cycles, settings])
 
   if (!settings) return null
 
@@ -72,8 +74,14 @@ export function Home() {
     if (activeCycle) {
       await endPeriod(activeCycle.id, today())
     } else {
-      await startPeriod(today())
+      setShowLengthDialog(true)
     }
+  }
+
+  async function handleConfirmPeriodLength(days: number) {
+    setShowLengthDialog(false)
+    await startPeriod(today())
+    await updateSettings({ avgPeriodLength: days })
   }
 
   const lastCycle = [...cycles].sort((a, b) => b.startDate.localeCompare(a.startDate))[0]
@@ -137,6 +145,14 @@ export function Home() {
           {showFeelingCard && <QuickFeelingCard onDismiss={() => setShowFeelingCard(false)} />}
         </div>
       </div>
+
+      {showLengthDialog && (
+        <PeriodLengthDialog
+          initialDays={settings.avgPeriodLength}
+          onConfirm={handleConfirmPeriodLength}
+          onCancel={() => setShowLengthDialog(false)}
+        />
+      )}
     </div>
   )
 }
